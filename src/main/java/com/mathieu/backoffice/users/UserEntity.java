@@ -1,9 +1,15 @@
 package com.mathieu.backoffice.users;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "users")
@@ -26,9 +32,11 @@ public class UserEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "created_at", nullable = false)
-    private OffsetDateTime createdAt;
+    @Column(name = "created_at", nullable = false, columnDefinition = "TEXT")
+    @org.hibernate.annotations.CreationTimestamp
+    private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
-    private OffsetDateTime updatedAt;
+    @Column(name = "updated_at", columnDefinition = "TEXT")
+    @org.hibernate.annotations.UpdateTimestamp
+    private LocalDateTime updatedAt;
 }

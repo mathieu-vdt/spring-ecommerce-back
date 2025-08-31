@@ -20,7 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .map(user -> org.springframework.security.core.userdetails.User
                         .withUsername(user.getUsername())
                         .password(user.getPassword())
-                        .roles(user.getRole())
+                        .authorities(user.getRole())
                         .build()
                 )
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));

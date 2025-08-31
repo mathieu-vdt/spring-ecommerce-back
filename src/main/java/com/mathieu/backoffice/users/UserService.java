@@ -1,11 +1,12 @@
 package com.mathieu.backoffice.users;
 
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +30,8 @@ public class UserService {
         user.setEmail(email);
         user.setRole(role);
         user.setPassword(passwordEncoder.encode(password)); // Hashage sécurisé
-        user.setCreatedAt(OffsetDateTime.now());
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
 
         return userRepository.save(user);
     }
