@@ -1,6 +1,11 @@
 package com.mathieu.backoffice.auth;
 
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
     private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/signup")
     public ResponseEntity<UserDto> signUp(@RequestBody SignUpRequest request) {
@@ -26,10 +33,26 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login() {
-        // Spring Security gère déjà le login via HTTP Basic
-        return ResponseEntity.ok("Login successful");
+    public ResponseEntity<?> login(@RequestBody AuthRequest req) {
+        UsernamePasswordAuthenticationToken token
+                = new UsernamePasswordAuthenticationToken(req.username(), req.password());
+
+        Authentication auth = authenticationManager.authenticate(token); // will throw BadCredentialsException if bad
+
+        var principal = auth.getPrincipal();
+        // récupère username & authorities
+        String username = auth.getName();
+        String authority = auth.getAuthorities().stream().findFirst().map(Object::toString).orElse("");
+
+        String jwt = jwtUtil.generateToken(username, authority);
+        return ResponseEntity.ok(Map.of("token", jwt));
     }
 }
 
-record SignUpRequest(String username, String email, String password) {}
+record SignUpRequest(String username, String email, String password) {
+
+}
+
+record AuthRequest(String username, String password) {
+
+}

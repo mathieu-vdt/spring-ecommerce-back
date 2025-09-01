@@ -38,7 +38,7 @@ public class ProductsController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false, name = "idCategory") Long idCategory,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(defaultValue = "1000") int size,
             @RequestParam(defaultValue = "name,asc") String sort
     ) {
         var order = sort.split(",");
