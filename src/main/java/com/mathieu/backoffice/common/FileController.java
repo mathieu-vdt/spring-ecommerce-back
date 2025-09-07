@@ -1,6 +1,5 @@
 package com.mathieu.backoffice.common;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -10,6 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -27,49 +27,44 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/files")
 public class FileController {
 
-    // Location to store uploaded files
-    private final Path uploadDir = Paths.get("uploads");
+    @Value("${app.upload.dir:/app/uploads}")   // ← injecté via application.properties / env
+    private String uploadDirProp;
 
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
-            if (!Files.exists(uploadDir)) {
-                Files.createDirectories(uploadDir);
-            }
+            Path uploadDir = Paths.get(uploadDirProp).toAbsolutePath().normalize();
+            Files.createDirectories(uploadDir);
 
-            // unique filename
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
             Path filePath = uploadDir.resolve(fileName);
 
-            // save file
-            try (InputStream inputStream = file.getInputStream()) {
-                Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+            try (InputStream in = file.getInputStream()) {
+                Files.copy(in, filePath, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            // return URL that frontend can use
-            String fileUrl = "/api/files/" + fileName;
-            return ResponseEntity.ok(Map.of("url", fileUrl));
+            // si tu exposes /uploads/** via WebMvcConfigurer (recommandé), renvoie:
+            String publicUrl = "/uploads/" + fileName;
+            return ResponseEntity.ok(Map.of("url", publicUrl));
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Could not upload file"));
         }
     }
 
+    // (facultatif si tu configures /uploads/** en statique)
     @GetMapping("/{filename:.+}")
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         try {
-            Path filePath = uploadDir.resolve(filename).normalize();
+            Path filePath = Paths.get(uploadDirProp).resolve(filename).normalize();
             Resource resource = new UrlResource(filePath.toUri());
-
             if (resource.exists() && resource.isReadable()) {
                 return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION,
-                                "inline; filename=\"" + resource.getFilename() + "\"")
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                         .body(resource);
-            } else {
-                return ResponseEntity.notFound().build();
             }
+            return ResponseEntity.notFound().build();
         } catch (MalformedURLException e) {
             return ResponseEntity.badRequest().build();
         }

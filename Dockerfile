@@ -16,12 +16,18 @@ RUN ./gradlew clean bootJar -x test --no-daemon --stacktrace
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 
-# ✅ crée le dossier dans l'image runtime
-RUN mkdir -p /app/data
+ENV APP_UPLOAD_DIR=/app/uploads \
+    APP_DATA_DIR=/app/data \
+    JAVA_OPTS=""
+
+# crée les dossiers dans l'image runtime
+RUN mkdir -p "$APP_UPLOAD_DIR" "$APP_DATA_DIR"
+
+# copie les images seed du repo dans l'image
+COPY src/main/resources/uploads/ "$APP_UPLOAD_DIR"/
 
 COPY --from=build /app/build/libs/*.jar app.jar
 
 EXPOSE 8080
-ENV JAVA_OPTS=""
-# ✅ recrée le dossier au démarrage (au cas où un volume le masque)
-CMD ["sh","-lc","mkdir -p /app/data && exec java $JAVA_OPTS -Dserver.port=${PORT:-8080} -jar /app/app.jar"]
+
+CMD ["sh","-lc","mkdir -p \"$APP_UPLOAD_DIR\" \"$APP_DATA_DIR\" && exec java $JAVA_OPTS -Dserver.port=${PORT:-8080} -jar /app/app.jar"]
