@@ -26,3 +26,50 @@ INSERT INTO users(username, password, role, email, created_at, updated_at) VALUE
 -- Customers
 INSERT INTO customers(user_id, first_name, last_name, email, phone_number, shipping_address, billing_address, created_at, updated_at) VALUES (2, 'John', 'Doe', 'user1@example.com', '0611111111', '10 Customer Road', '10 Customer Road', datetime('now'), datetime('now'));
 INSERT INTO customers(user_id, first_name, last_name, email, phone_number, shipping_address, billing_address, created_at, updated_at) VALUES (3, 'Jane', 'Smith', 'user2@example.com', '0622222222', '20 Client Avenue', '20 Client Avenue', datetime('now'), datetime('now'));
+
+-- =========================
+-- ORDERS (IDs forcés 1..8)
+-- =========================
+-- Colonnes: id, customer_id, total, status
+-- created_at / updated_at seront remplis par @PrePersist/@PreUpdate
+
+INSERT INTO orders (id, customer_id, total, status, created_at, updated_at) VALUES (1, 1, 466.00, 'Delivered', datetime('now', '-2 days'), datetime('now', '-2 days')), (2, 2, 210.00, 'Delivered', datetime('now', '-1 days'), datetime('now', '-1 days')), (3, 1, 598.99, 'Shipped', datetime('now', '-4 days'), datetime('now', '-4 days')), (4, 2, 178.00, 'Delivered', datetime('now', '-2 days'), datetime('now', '-2 days')), (5, 1, 1980.00, 'Delivered', datetime('now', '-2 days'), datetime('now', '-2 days')), (6, 2, 337.05, 'Pending', datetime('now', '-1 days'), datetime('now', '-1 days')), (7, 1, 168.00, 'Pending', datetime('now'), datetime('now')), (8, 2, 249.00, 'Pending', datetime('now'), datetime('now'));
+
+-- =========================
+-- ORDER ITEMS
+-- =========================
+-- Colonnes: order_id, product_id, quantity, price (prix unitaire)
+-- Rappels produits (IDs d’après tes inserts produits):
+--  1: Nike Mercurial (370.00)
+--  2: Calvin Klein Watch (187.05)
+--  3: Gucci Marmont Bag (1980.00)
+--  5: LA TRAINER LUX Shoes (48.00)
+--  6: Adidas Trefoil Hoodie (60.00)
+--  7: Ray-Ban Wayfarer (150.00)
+--  8: Fitbit Charge 5 (130.00)
+--  9: AirPods Pro 2 (249.00)
+-- 10: Sony WH-1000XM4 (349.99)
+
+-- Order 1 total 466.00 → 2×(48.00) + 1×(370.00)
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (1, 5, 2,  48.00), (1, 1, 1, 370.00);
+
+-- Order 2 total 210.00 → 1×(150.00) + 1×(60.00)
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (2, 7, 1, 150.00), (2, 6, 1,  60.00);
+
+-- Order 3 total 598.99 → 1×(249.00) + 1×(349.99)
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (3, 9,  1, 249.00), (3, 10, 1, 349.99);
+
+-- Order 4 total 178.00 → 1×(130.00) + 1×(48.00)
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (4, 8, 1, 130.00), (4, 5, 1,  48.00);
+
+-- Order 5 total 1980.00 → 1×(1980.00)
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (5, 3, 1, 1980.00);
+
+-- Order 6 total 337.05 → 1×(187.05) + 1×(150.00)
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (6, 2, 1, 187.05), (6, 7, 1, 150.00);
+
+-- Order 7 total 168.00 → 2×(60.00) + 1×(48.00)
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (7, 6, 2,  60.00), (7, 5, 1,  48.00);
+
+-- Order 8 total 249.00 → 1×(249.00)
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (8, 9, 1, 249.00);
