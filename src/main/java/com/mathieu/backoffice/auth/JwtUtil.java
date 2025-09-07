@@ -2,6 +2,8 @@ package com.mathieu.backoffice.auth;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -21,9 +23,13 @@ public class JwtUtil {
 
     public String generateToken(String username, String authority) {
         long now = System.currentTimeMillis();
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", username);
+        claims.put("role", authority);
+
         return Jwts.builder()
                 .setSubject(username)
-                .claim("role", authority)
+                .setClaims(claims)
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + validityMs))
                 .signWith(key, SignatureAlgorithm.HS256)
