@@ -19,3 +19,4 @@ public record OrderDto(
     return new OrderDto(o.getId(), o.getIdCustomer(), o.getTotal(), o.getStatus(), o.getCreatedAt(), o.getUpdatedAt());
   }
 }
+

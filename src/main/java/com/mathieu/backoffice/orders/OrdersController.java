@@ -1,15 +1,28 @@
 package com.mathieu.backoffice.orders;
 
-import com.mathieu.backoffice.orders.dto.*;
-import com.mathieu.backoffice.products.ProductRepository;
-import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.mathieu.backoffice.orders.dto.CreateOrderRequest;
+import com.mathieu.backoffice.orders.dto.OrderDto;
+import com.mathieu.backoffice.orders.dto.OrderItemDto;
+import com.mathieu.backoffice.orders.dto.OrderItemProductDto;
+import com.mathieu.backoffice.orders.dto.UpdateOrderStatusRequest;
+import com.mathieu.backoffice.products.ProductRepository;
+
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/orders")

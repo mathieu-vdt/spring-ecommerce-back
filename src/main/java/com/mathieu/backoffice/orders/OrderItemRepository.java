@@ -17,3 +17,5 @@ public interface OrderItemRepository extends JpaRepository<OrderItemEntity, Long
   """)
     List<OrderItemEntity> findByOrderId(@Param("orderId") Long orderId);
 }
+
+
