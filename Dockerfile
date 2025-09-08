@@ -20,10 +20,10 @@ ENV APP_UPLOAD_DIR=/app/uploads \
     APP_DATA_DIR=/app/data \
     JAVA_OPTS=""
 
-# crée les dossiers dans l'image runtime
+# Crée les dossiers dans l'image runtime
 RUN mkdir -p "$APP_UPLOAD_DIR" "$APP_DATA_DIR"
 
-# copie les images seed du repo dans l'image
+# Copie les images seed du repo dans l'image
 COPY src/main/resources/uploads/ "$APP_UPLOAD_DIR"/
 
 COPY --from=build /app/build/libs/*.jar app.jar
